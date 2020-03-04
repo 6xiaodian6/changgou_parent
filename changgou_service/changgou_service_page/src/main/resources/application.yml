@@ -1,0 +1,38 @@
+server:
+  port: 9012
+spring:
+  application:
+    name: page
+  rabbitmq:
+    host: 192.168.200.128
+  main:
+    # 当遇到同样名字的时候，是否允许覆盖注册
+    allow-bean-definition-overriding: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:6868/eureka
+  instance:
+    prefer-ip-address: true
+feign:
+  hystrix:
+    enabled: false
+  client:
+    config:
+        # 配置全局的feign的调用超时时间  如果由指定的服务配置，默认的配置不会生效
+      default:
+        # 指定的是消费者连接服务提供者的连接超时时间，单位是毫秒之值
+        connection-timeout: 600000
+        # 指定的是调用服务提供者的服务的超时时间，单位也是毫秒值
+        readTimeout: 600000
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          # 如果enable设置为false，则请求超时交给ribbon控制
+          enable: true
+        isolation:
+          strategy: SEMAPHORE
+# 生成静态页的位置
+pagepath: C:\workspace\JavaEmployment\items

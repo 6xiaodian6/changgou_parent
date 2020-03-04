@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: sysgateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          # 匹配所有请求
+          '[/**]':
+            # 同源策略处理，也就是允许跨域请求
+            allowedOrigins: "*"
+            # 支持的方法
+            allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+      routes:
+      - id: goods
+        uri: lb://goods
+        predicates:
+        - Path=/goods/**
+        filters:
+        - StripPrefix=1
+        # 请求的限流名称，名字不能随便写
+        - name: RequestRateLimiter
+          args:
+            key-resolver: "#{@ipKeyResolver}"
+            # 令牌桶每秒填充速度
+            redis-rate-limiter.replenishRate: 1
+            # 令牌桶总容量
+            redis-rate-limiter.burstCapacity: 1
+      - id: system
+        uri: lb://system
+        predicates:
+        - Path=/system/**
+        filters:
+        - StripPrefix= 1
+  redis:
+    host: 192.168.200.128
+    port: 6379
+server:
+  port: 9101
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:6868/eureka
+  instance:
+    prefer-ip-address: true
